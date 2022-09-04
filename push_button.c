@@ -41,7 +41,7 @@ void setup (void)
 void main(void)
 {
 
-    unsigned int time = 50;
+    unsigned int time = 1000;
     
     setup();
  
@@ -55,7 +55,7 @@ void main(void)
     		if(push_button  == 0)
     		{
     		
-    			delay(time); 			
+    			//delay(time); 			
     
 			GP0 = 0x11;
 			//delay(time);
