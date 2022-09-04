@@ -44,7 +44,7 @@ void setup (void)
 {
 	ADCON0 = 0x00;
 	ANSEL = 0x00;
-	CMCON = 0x07; //shut off comparator
+	CMCON = 0x00;
 	VRCON = 0X00;
 	TRISIO = 0X20;	// set all GPIOs as outputs, except GP5= push button
 	GPIO = 0x20;	// set all pins low except GP5 
@@ -69,9 +69,9 @@ int contador(void)
 void sclock(void)
 {
 	SCLK_595 =1;
-	delay(100);
+	delay(500);
 	SCLK_595 = 0;
-	delay(100);
+	delay(500);
 
 
 }
@@ -82,7 +82,7 @@ void sclock(void)
 void rclock(void)
 {
 	RCLK_595 =1;
-	delay(100);
+	delay(500);
 	RCLK_595 = 0;
 	//delay(500);
 
@@ -92,7 +92,7 @@ void rclock(void)
 /* data display:
  * Thiss function will send the data to the serial line 74HC595 
  */
-void data_display(int data)
+void data_display(unsigned int data)
 {
 	for(int i=0; i<8;i++)
 	{
@@ -111,15 +111,35 @@ void data_display(int data)
 void main(void)
 {
 
-    unsigned int time = 1000;
+    unsigned int time = 500;
     unsigned int time2 = 50;
     setup();
  
     //Loop forever
     //GP0 = 0x00;
-    delay(time);
-    data_display(0x3F); 
-    return;
+    //delay(time);
+    data_display(0x3F);
+    while ( 1 )
+    {
+    		data_display(data[4]);
+		   
+    		if(push_button  == 0)
+    		{	
+    			
+    			data_display(data[0]);
+    			
+    		
+    			delay(time); 			
+    
+			//GP0 = 0x11;
+			//delay(time);
+
+			//GP0 = ~GP0;
+			//delay(time);
+			  	
+    		}
+    }
+ 
 }
 
 void delay(unsigned int tiempo)
