@@ -1,0 +1,5 @@
+#
+holapic/
+*.asm
+*.o
+*.lst
