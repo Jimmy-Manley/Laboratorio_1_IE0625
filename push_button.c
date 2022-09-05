@@ -70,9 +70,9 @@ int contador(void)
 void sclock(void)
 {
 	SCLK_595 =1;
-	delay(100);
+	delay(10);
 	SCLK_595 = 0;
-	delay(100);
+	delay(10);
 
 
 }
@@ -83,7 +83,7 @@ void sclock(void)
 void rclock(void)
 {
 	RCLK_595 =1;
-	delay(100);
+	delay(10);
 	RCLK_595 = 0;
 	//delay(500);
 
@@ -125,16 +125,45 @@ void main(void)
     {	
     	for(int i=0;i<10;i++)
 	{
-	if(push_button == 0)
-		{
-		data_display(0x4f); 
 
-		}
-	rand = i;
-	if(push_button == 0)
+		rand = i;
+		if(push_button == 0)
 		{
-		data_display(0x4f); 
-
+			//1->0x30;2->0x5B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
+			switch(rand)
+			{	case 0:
+				data_display(0X3F);
+				break;
+				case 1:
+				data_display(0x30);
+				break;
+				case 2:
+				data_display(0x5B);
+				break;
+				case 3:
+				data_display(0x4f);
+				break;
+				case 4:
+				data_display(0X66);
+				break;
+				case 5:
+				data_display(0x6D);
+				break;
+				case 6:
+				data_display(0X7D);
+				break;
+				case 7:
+				data_display(0X47);
+				break;
+				case 8:
+				data_display(0X7F);
+				break;
+				case 9:
+				data_display(0X4F); 
+				break;		
+		
+			}
+		
 		}
 	}
 
