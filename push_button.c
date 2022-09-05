@@ -1,37 +1,13 @@
 #include <pic14/pic12f675.h>
-#include <stdlib.h>
-
-//#pragma config WDTE = OFF //WDT disabled 
-//To compile:
-//sdcc -mpic14 -p16f675 blink.c
- 
-//To program the chip using picp:
-//Assuming /dev/ttyUSB0 is the serial port.
- 
-//Erase the chip:
-//picp /dev/ttyUSB0 16f887 -ef
- 
-//Write the program:
-//picp /dev/ttyUSB0 16f887 -wp blink.hex
- 
-//Write the configuration words (optional):
-//picp /dev/ttyUSB0 16f887 -wc 0x2ff4 0x3fff
- 
-//Doing it all at once: erasing, programming, and reading back config words:
-//picp /dev/ttyUSB0 16f887 -ef -wp blink.hex -rc
- 
-//To program the chip using pk2cmd:
-//pk2cmd -M -PPIC16f887 -Fblink.hex
-
-
 // Interfacing 74HC95 Serial Shift Register
 #define push_button GP5	//push button
 #define SER_595 GP0	//serial data in pin 14
+#define SER1_595 GP4	//serial data in pin 14 for most signifcant digit
 #define RCLK_595 GP1	//storage register clock input pin 12 "latch"
 #define SCLK_595 GP2	//shift register clock input pin 11 "storage"
 
 /*========= Globals=========*/
-char data[10] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x67};
+//char data[10] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x67};
 //1->0x30;2->0x1B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
 
 /* ======== Function space ==========*/
@@ -39,7 +15,18 @@ char data[10] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x67};
 /* Delay function */
  
 void delay (unsigned int tiempo);
+/* floor function for most significant digit*/
+int floorm(int num)
+{
+	int Dig = 0;
+ 	while((num-=10)>=0)
+ 	{
+ 		Dig++;
+ 
+ 	}
+	return Dig;
 
+}
 /* setup function*/
 void setup (void)
 {
@@ -53,15 +40,6 @@ void setup (void)
 }
 
 /* Counter function*/
-int contador(void)
-{
-	for(int i=0;i<10;i++)
-	{
-	
-	return i;
-	}
-
-}
 
 /* sclock:
  * This function will enable the storage clock to 74HC695
@@ -93,80 +71,89 @@ void rclock(void)
 /* data display:
  * Thiss function will send the data to the serial line 74HC595 
  */
-void data_display(int data)
-{
-	for(int i=0; i<8;i++)
+void data_display(int data,char DS)
+{	if(DS == '0')
 	{
-		SER_595 = (data >> i) & 0x01; // bit shift and bit mask.
-		sclock(); // enable data storage clock
-	
+		for(int i=0; i<8;i++)
+		{
+			SER_595 = (data >> i) & 0x01; // bit shift and bit mask.
+			sclock(); // enable data storage clock
+		
+		}
+		rclock(); // data latch
 	}
-	rclock(); // data latch
+	if(DS == '1')
+	{
+		for(int i=0; i<8;i++)
+		{
+			SER1_595 = (data >> i) & 0x01; // bit shift and bit mask.
+			sclock(); // enable data storage clock
+		
+		}
+		rclock(); // data latch
+	}
+	
+}
+/* data display 1:
+ * Thiss function will send the data to the serial line 74HC595 
+ */
+void switcher(int a,char D)
+{
+	switch(a)
+	{	case 0:
+		data_display(0X3F,D);
+		break;
+		case 1:
+		data_display(0x30,D);
+		break;
+		case 2:
+		data_display(0x5B,D);
+		break;
+		case 3:
+		data_display(0x4f,D);
+		break;
+		case 4:
+		data_display(0X66,D);
+		break;
+		case 5:
+		data_display(0x6D,D);
+		break;
+		case 6:
+		data_display(0X7D,D);
+		break;
+		case 7:
+		data_display(0X47,D);
+		break;
+		case 8:
+		data_display(0X7F,D);
+		break;
+		case 9:
+		data_display(0X4F,D); 
+		break;		
+
+	}	
 
 }
-
-
  
  /*======= Main loop ========*/
 void main(void)
-{
-
-    unsigned int time = 100;
-    unsigned int time2 = 50;
-    
-    int rand = 0;
-    setup();
- 
-    //Loop forever
-    //GP0 = 0x00;
-    delay(time);
-    
+{   
+    //setup();
+    //delay(100);
     while(1)
     {	
-    	for(int i=0;i<10;i++)
+    	for(int i=0;i<100;i++)
 	{
 
-		rand = i;
+		int rand0 = i%10;
+		int rand1 = floorm(i);
 		if(push_button == 0)
 		{
 			//1->0x30;2->0x5B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
-			switch(rand)
-			{	case 0:
-				data_display(0X3F);
-				break;
-				case 1:
-				data_display(0x30);
-				break;
-				case 2:
-				data_display(0x5B);
-				break;
-				case 3:
-				data_display(0x4f);
-				break;
-				case 4:
-				data_display(0X66);
-				break;
-				case 5:
-				data_display(0x6D);
-				break;
-				case 6:
-				data_display(0X7D);
-				break;
-				case 7:
-				data_display(0X47);
-				break;
-				case 8:
-				data_display(0X7F);
-				break;
-				case 9:
-				data_display(0X4F); 
-				break;		
-		
-			}
-		
+			switcher(rand0,'0');
+			//switcher(rand1,'1');
 		}
 	}
-
     }
     return;
 }
