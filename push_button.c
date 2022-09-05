@@ -32,6 +32,7 @@
 
 /*========= Globals=========*/
 char data[10] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x67};
+//1->0x30;2->0x1B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
 
 /* ======== Function space ==========*/
 
@@ -99,7 +100,6 @@ void data_display(int data)
 		SER_595 = (data >> i) & 0x01; // bit shift and bit mask.
 		sclock(); // enable data storage clock
 	
-	
 	}
 	rclock(); // data latch
 
@@ -118,7 +118,16 @@ void main(void)
     //Loop forever
     //GP0 = 0x00;
     delay(time);
-    data_display(0x3F); 
+    
+    while(1)
+    {
+    	if(push_button == 0)
+    	{
+    		delay(time);
+    		data_display(0x4f); 
+    	}
+    
+    }
     return;
 }
 
