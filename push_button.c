@@ -111,8 +111,10 @@ void data_display(int data)
 void main(void)
 {
 
-    unsigned int time = 1000;
+    unsigned int time = 100;
     unsigned int time2 = 50;
+    
+    int rand = 0;
     setup();
  
     //Loop forever
@@ -120,13 +122,22 @@ void main(void)
     delay(time);
     
     while(1)
-    {
-    	if(push_button == 0)
-    	{
-    		delay(time);
-    		data_display(0x4f); 
-    	}
-    
+    {	
+    	for(int i=0;i<10;i++)
+	{
+	if(push_button == 0)
+		{
+		data_display(0x4f); 
+
+		}
+	rand = i;
+	if(push_button == 0)
+		{
+		data_display(0x4f); 
+
+		}
+	}
+
     }
     return;
 }
