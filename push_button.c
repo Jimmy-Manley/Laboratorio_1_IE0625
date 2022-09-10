@@ -26,19 +26,28 @@
 
 // Interfacing 74HC95 Serial Shift Register
 #define push_button GP5	//push button
+#define SER1_595 GP4	//serial data in pin 14 for most signifcant digit
 #define SER_595 GP0	//serial data in pin 14
 #define RCLK_595 GP1	//storage register clock input pin 12 "latch"
 #define SCLK_595 GP2	//shift register clock input pin 11 "storage"
-
-/*========= Globals=========*/
-char data[10] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x67};
-//1->0x30;2->0x1B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
 
 /* ======== Function space ==========*/
 
 /* Delay function */
  
 void delay (unsigned int tiempo);
+/* floor function for most significant digit*/
+int floorm(int num)
+{
+	int Dig = 0;
+ 	while((num-=10)>=0)
+ 	{
+ 		Dig++;
+ 
+ 	}
+	return Dig;
+
+}
 
 /* setup function*/
 void setup (void)
@@ -49,17 +58,6 @@ void setup (void)
 	VRCON = 0X00;
 	TRISIO = 0X20;	// set all GPIOs as outputs, except GP5= push button
 	GPIO = 0x20;	// set all pins low except GP5 
-
-}
-
-/* Counter function*/
-int contador(void)
-{
-	for(int i=0;i<10;i++)
-	{
-	
-	return i;
-	}
 
 }
 
@@ -93,28 +91,37 @@ void rclock(void)
 /* data display:
  * Thiss function will send the data to the serial line 74HC595 
  */
-void data_display(int data)
-{
-	for(int i=0; i<8;i++)
+void data_display(int data,char DS)
+{	if(DS == '0')
 	{
-		SER_595 = (data >> i) & 0x01; // bit shift and bit mask.
-		sclock(); // enable data storage clock
-	
+		for(int i=0; i<8;i++)
+		{
+			SER_595 = (data >> i) & 0x01; // bit shift and bit mask.
+			sclock(); // enable data storage clock
+		
+		}
+		rclock(); // data latch
 	}
-	rclock(); // data latch
-
+	if(DS == '1')
+	{
+		for(int i=0; i<8;i++)
+		{
+			SER1_595 = (data >> i) & 0x01; // bit shift and bit mask.
+			sclock(); // enable data storage clock
+		
+		}
+		rclock(); // data latch
+	}
+	
 }
-
-
- 
  /*======= Main loop ========*/
 void main(void)
 {
 
     unsigned int time = 100;
-    unsigned int time2 = 50;
     
-    int rand = 0;
+    int rand0 = 0;
+    int rand1 = 0;
     setup();
  
     //Loop forever
@@ -123,43 +130,45 @@ void main(void)
     
     while(1)
     {	
-    	for(int i=0;i<10;i++)
+    	for(int i=0;i<100;i++)
 	{
 
-		rand = i;
+		rand0 = i;
 		if(push_button == 0)
 		{
+			int rand0 = i%10;
+			int rand1 = floorm(i);
 			//1->0x30;2->0x5B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
-			switch(rand)
+			switch(rand0)
 			{	case 0:
-				data_display(0X3F);
+				data_display(0,'0');
 				break;
 				case 1:
-				data_display(0x30);
+				data_display(0x30,'0');
 				break;
 				case 2:
-				data_display(0x5B);
+				data_display(0x5B,'0');
 				break;
 				case 3:
-				data_display(0x4f);
+				data_display(0x4f,'0');
 				break;
 				case 4:
-				data_display(0X66);
+				data_display(0X66,'0');
 				break;
 				case 5:
-				data_display(0x6D);
+				data_display(0x6D,'0');
 				break;
 				case 6:
-				data_display(0X7D);
+				data_display(0X7D,'0');
 				break;
 				case 7:
-				data_display(0X47);
+				data_display(0X47,'0');
 				break;
 				case 8:
-				data_display(0X7F);
+				data_display(0X7F,'0');
 				break;
 				case 9:
-				data_display(0X4F); 
+				data_display(0X4F,'0'); 
 				break;		
 		
 			}
