@@ -30,7 +30,10 @@
 #define SER_595 GP0	//serial data in pin 14
 #define RCLK_595 GP1	//storage register clock input pin 12 "latch"
 #define SCLK_595 GP2	//shift register clock input pin 11 "storage"
+/*========= Globals=========*/
 
+char data[10] = {0x3F,0x4F,};
+//1->0x30;2->0x5B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
 /* ======== Function space ==========*/
 
 /* Delay function */
@@ -91,27 +94,15 @@ void rclock(void)
 /* data display:
  * Thiss function will send the data to the serial line 74HC595 
  */
-void data_display(int data,char DS)
-{	if(DS == '0')
-	{
-		for(int i=0; i<8;i++)
+void data_display(int data)
+{	
+	for(int i=0; i<8;i++)
 		{
 			SER_595 = (data >> i) & 0x01; // bit shift and bit mask.
 			sclock(); // enable data storage clock
 		
 		}
 		rclock(); // data latch
-	}
-	if(DS == '1')
-	{
-		for(int i=0; i<8;i++)
-		{
-			SER1_595 = (data >> i) & 0x01; // bit shift and bit mask.
-			sclock(); // enable data storage clock
-		
-		}
-		rclock(); // data latch
-	}
 	
 }
  /*======= Main loop ========*/
@@ -141,34 +132,34 @@ void main(void)
 			//1->0x30;2->0x5B;3->0x4F;4->0X66; ;5->0x6D;6->0X7D;7->0X47;8->0X7F;9->0X4F;0->0X3F
 			switch(rand0)
 			{	case 0:
-				data_display(0,'0');
+				data_display(0x3F);
 				break;
 				case 1:
-				data_display(0x30,'0');
+				data_display(0x30);
 				break;
 				case 2:
-				data_display(0x5B,'0');
+				data_display(0x5);
 				break;
 				case 3:
-				data_display(0x4f,'0');
+				data_display(0x4F);
 				break;
 				case 4:
-				data_display(0X66,'0');
+				data_display(0X66);
 				break;
 				case 5:
-				data_display(0x6D,'0');
+				data_display(0x6D);
 				break;
 				case 6:
-				data_display(0X7D,'0');
+				data_display(0X7D);
 				break;
 				case 7:
-				data_display(0X47,'0');
+				data_display(0X47);
 				break;
 				case 8:
-				data_display(0X7F,'0');
+				data_display(0X7F);
 				break;
 				case 9:
-				data_display(0X4F,'0'); 
+				data_display(0X4F); 
 				break;		
 		
 			}
